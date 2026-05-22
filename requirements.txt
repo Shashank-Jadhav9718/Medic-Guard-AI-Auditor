@@ -1,0 +1,11 @@
+langchain
+langgraph
+chromadb
+openai
+fastapi
+uvicorn
+streamlit
+nemoguardrails
+python-dotenv
+httpx
+pymupdf
