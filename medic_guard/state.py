@@ -28,4 +28,4 @@ if __name__ == "__main__":
     s = empty_state("Test product label text.")
     assert s["audit_status"] == "PENDING"
     assert s["retry_count"] == 0
-    print("✅ AuditState schema valid:", list(s.keys()))
+    print("[OK] AuditState schema valid:", list(s.keys()))

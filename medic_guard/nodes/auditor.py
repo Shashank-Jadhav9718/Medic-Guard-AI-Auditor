@@ -16,5 +16,5 @@ if __name__ == "__main__":
     test_state = empty_state("Product label: Paracetamol 500mg tablets. Contains paracetamol.")
     result = auditor_node(test_state)
     assert len(result["retrieved_rules"]) > 0, "No rules retrieved — check Knowra ingestion"
-    print(f"✅ Auditor Node: retrieved {len(result['retrieved_rules'])} rules.")
+    print(f"[OK] Auditor Node: retrieved {len(result['retrieved_rules'])} rules.")
     print("  First rule preview:", result["retrieved_rules"][0][:80])
