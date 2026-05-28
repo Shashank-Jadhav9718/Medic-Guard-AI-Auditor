@@ -48,7 +48,7 @@ def validator_node(state: AuditState) -> AuditState:
             else:
                 score = 0.0
             scores.append(max(0.0, min(1.0, score)))
-        except Exception as e:
+        except Exception:
             scores.append(0.0)
             
     mean_score = sum(scores) / len(scores) if scores else 0.0
