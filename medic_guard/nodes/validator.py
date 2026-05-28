@@ -1,3 +1,4 @@
+import re
 from medic_guard.state import AuditState
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_openai import ChatOpenAI
@@ -26,19 +27,30 @@ def validator_node(state: AuditState) -> AuditState:
             temperature=0.0
         )
         
+    doc_text = str(state.get("document_text", ""))[:300]
+    retrieved_rules = state.get("retrieved_rules", [])
+    
     scores = []
-    for rule in state["retrieved_rules"]:
+    for rule in retrieved_rules:
+        rule_str = str(rule)[:300]
         prompt = (
             f"Rate how relevant this rule is to the document on a scale of 0 to 1. "
             f"Reply with ONLY a number between 0 and 1, nothing else.\n\n"
-            f"Document: {state['document_text'][:300]}\n\nRule: {rule[:300]}"
+            f"Document: {doc_text}\n\nRule: {rule_str}"
         )
         try:
             response = llm.invoke(prompt)
-            score = float(response.content.strip())
+            content = response.content.strip()
+            # Extract first number (float or integer) using regex
+            match = re.search(r"[+-]?\d*\.?\d+", content)
+            if match:
+                score = float(match.group())
+            else:
+                score = 0.0
             scores.append(max(0.0, min(1.0, score)))
         except Exception as e:
             scores.append(0.0)
+            
     mean_score = sum(scores) / len(scores) if scores else 0.0
     state["confidence_score"] = round(mean_score, 3)
     state["validation_passed"] = mean_score >= 0.5
