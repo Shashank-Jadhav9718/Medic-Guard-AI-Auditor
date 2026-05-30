@@ -2,7 +2,9 @@ from medic_guard.state import AuditState
 from langchain_openai import ChatOpenAI
 from langchain_google_genai import ChatGoogleGenerativeAI
 from medic_guard.config import load_config
-import json, re
+import json
+import re
+
 
 def reporter_node(state: AuditState) -> AuditState:
     if state.get("error"):
@@ -14,13 +16,11 @@ def reporter_node(state: AuditState) -> AuditState:
         llm = ChatGoogleGenerativeAI(
             model=model_name,
             google_api_key=cfg["GOOGLE_API_KEY"] or cfg["GEMINI_API_KEY"],
-            temperature=0.0
+            temperature=0.0,
         )
     else:
         llm = ChatOpenAI(
-            model=model_name,
-            api_key=cfg["OPENAI_API_KEY"],
-            temperature=0.0
+            model=model_name, api_key=cfg["OPENAI_API_KEY"], temperature=0.0
         )
     rules_text = "\n".join(f"- {r[:200]}" for r in state["retrieved_rules"])
     prompt = (
@@ -43,16 +43,24 @@ def reporter_node(state: AuditState) -> AuditState:
         state["audit_status"] = "FLAGGED"
     return state
 
+
 if __name__ == "__main__":
     import sys
+
     if sys.platform.startswith("win"):
         sys.stdout.reconfigure(encoding="utf-8")
     from medic_guard.state import AuditState
+
     mock_state: AuditState = {
         "document_text": "Product: Ibuprofen 200mg. All labeling requirements met.",
         "retrieved_rules": ["Ingredient list must appear in descending order."],
-        "retry_count": 0, "validation_passed": True, "confidence_score": 0.8,
-        "audit_status": "PENDING", "rule_references": [], "remediation": "", "error": ""
+        "retry_count": 0,
+        "validation_passed": True,
+        "confidence_score": 0.8,
+        "audit_status": "PENDING",
+        "rule_references": [],
+        "remediation": "",
+        "error": "",
     }
     result = reporter_node(mock_state)
     assert result["audit_status"] in ("PASSED", "FLAGGED")
