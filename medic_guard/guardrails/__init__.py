@@ -8,8 +8,9 @@ load_dotenv(root_env_path)
 # 2. Enforce LangChain routing in NeMo Guardrails programmatically BEFORE importing NeMo
 os.environ["NEMOGUARDRAILS_LLM_FRAMEWORK"] = "langchain"
 
-# 3. Now import NeMo Guardrails
-from nemoguardrails import LLMRails, RailsConfig
+# 3. Now import NeMo Guardrails (PEP 8 bypass for programmatic environment setup)
+from nemoguardrails import LLMRails, RailsConfig  # noqa: E402
+
 
 def get_rails() -> LLMRails:
     config = RailsConfig.from_path(os.path.dirname(__file__))
