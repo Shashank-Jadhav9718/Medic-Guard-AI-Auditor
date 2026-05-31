@@ -1,0 +1,7 @@
+define flow block pii in output
+  if $bot_message matches r"[\w\.-]+@[\w\.-]+\.\w+" or $bot_message matches r"\b\d{3}-\d{2}-\d{4}\b"
+    bot say "Output blocked: PII detected. Please review document before submission."
+    stop
+
+define flow soften hallucination language
+  bot say $bot_message

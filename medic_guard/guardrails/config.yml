@@ -1,0 +1,10 @@
+models:
+  - type: main
+    engine: openai
+    model: gpt-4o
+
+rails:
+  output:
+    flows:
+      - block pii in output
+      - soften hallucination language
