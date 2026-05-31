@@ -1,7 +1,7 @@
 models:
   - type: main
-    engine: openai
-    model: gpt-4o
+    engine: google_genai
+    model: gemini-1.5-flash
 
 rails:
   output:
