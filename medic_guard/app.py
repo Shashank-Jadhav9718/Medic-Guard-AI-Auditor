@@ -1,8 +1,13 @@
 import streamlit as st
-import httpx, fitz, json
+import httpx
+import fitz
 
-st.set_page_config(page_title="Medic-Guard Auditor", layout="centered",
-                   initial_sidebar_state="collapsed")
+
+st.set_page_config(
+    page_title="Medic-Guard Auditor",
+    layout="centered",
+    initial_sidebar_state="collapsed",
+)
 
 st.title("🛡️ Medic-Guard AI Auditor")
 st.caption("Upload a medical product PDF to run an autonomous compliance audit.")
