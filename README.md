@@ -1,5 +1,7 @@
 # 🛡️ Medic-Guard AI Auditor
 
+![Medic-Guard UI](assets/screenshot.png)
+
 Medic-Guard AI Auditor is an automated, AI-driven compliance auditing system for medical product documentation. It analyzes medical documents (like PDFs of product labels, clinical trial summaries, etc.) against FDA and EMA regulatory guidelines, flagging potential compliance issues and providing actionable remediation steps.
 
 ## ✨ Features
@@ -12,7 +14,7 @@ Medic-Guard AI Auditor is an automated, AI-driven compliance auditing system for
 - **Modern User Interface:** Provides an easy-to-use Streamlit frontend for uploading PDFs and viewing audit results.
 - **RESTful API Backend:** A scalable FastAPI backend endpoint to run the audit pipeline asynchronously.
 
-## 🏗️ Architecture
+## 🏗️ Architecture & Workflow
 
 The application is composed of several key components:
 1. **Frontend (Streamlit):** `medic_guard/app.py` allows users to upload PDF documents, extracts text using PyMuPDF (`fitz`), and queries the API.
@@ -23,6 +25,28 @@ The application is composed of several key components:
    - **Reporter Node:** Formats the final audit status (PASSED or FLAGGED), confidence score, rule references, and remediation steps.
 4. **Knowledge Store (Knowra):** Manages vector embeddings of FDA/EMA documents (`knowra/ingestor.py`, `knowra/retriever.py`, `knowra/store.py`).
 5. **Guardrails:** Uses NVIDIA NeMo Guardrails (`medic_guard/guardrails/`) to prevent PII leakage and ensure safe LLM interactions.
+
+### 📊 LangGraph Execution Flow
+
+```mermaid
+graph TD
+    START((START)) --> Auditor[Auditor Node<br/><i>Queries Knowra & Retrieves Rules</i>]
+    Auditor --> Validator[Validator Node<br/><i>LLM Compliance Check</i>]
+    Validator --> Condition{Validation<br/>Passed?}
+    
+    Condition -- Yes --> Reporter[Reporter Node<br/><i>Formats Final Output</i>]
+    Condition -- No<br/>(Retry < Max) --> Auditor
+    Condition -- No<br/>(Retry >= Max) --> Reporter
+    
+    Reporter --> END((END))
+    
+    style START fill:#5DCAA5,stroke:#333,stroke-width:2px,color:#000
+    style END fill:#5DCAA5,stroke:#333,stroke-width:2px,color:#000
+    style Auditor fill:#1a1f2e,stroke:#5DCAA5,stroke-width:2px,color:#fff
+    style Validator fill:#1a1f2e,stroke:#5DCAA5,stroke-width:2px,color:#fff
+    style Reporter fill:#1a1f2e,stroke:#5DCAA5,stroke-width:2px,color:#fff
+    style Condition fill:#0e1117,stroke:#e0e0e0,stroke-width:2px,color:#fff
+```
 
 ## 🚀 Local Setup
 
@@ -57,19 +81,6 @@ uvicorn medic_guard.api:app --reload --port 8000 &
 # 7. Start the Streamlit frontend UI
 streamlit run medic_guard/app.py
 ```
-
-## ☁️ Streamlit Cloud Deployment
-
-1. Push your local repository to GitHub (ensure `chroma_data/` and `.env` are listed in `.gitignore`).
-2. Log in to [share.streamlit.io](https://share.streamlit.io) and connect your GitHub account.
-3. Create a new app and select the `Medic-Guard-AI-Auditor` repository.
-4. Set the main file path to: `medic_guard/app.py`.
-5. Under **Advanced Settings** -> **Secrets Manager**, add your API keys:
-   ```toml
-   OPENAI_API_KEY = "your-api-key"
-   GEMINI_API_KEY = "your-api-key"
-   ```
-6. Click **Deploy**.
 
 ## 📖 Standard Operating Procedure (SOP)
 
