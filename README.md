@@ -1,6 +1,7 @@
 # 🛡️ Medic-Guard AI Auditor
 
-![Medic-Guard UI](assets/screenshot.png)
+<!-- Replace the link below with your original UI screenshot -->
+![Medic-Guard UI](assets/original_ui_screenshot.png)
 
 Medic-Guard AI Auditor is an automated, AI-driven compliance auditing system for medical product documentation. It analyzes medical documents (like PDFs of product labels, clinical trial summaries, etc.) against FDA and EMA regulatory guidelines, flagging potential compliance issues and providing actionable remediation steps.
 
@@ -14,6 +15,8 @@ Medic-Guard AI Auditor is an automated, AI-driven compliance auditing system for
 - **Modern User Interface:** Provides an easy-to-use Streamlit frontend for uploading PDFs and viewing audit results.
 - **RESTful API Backend:** A scalable FastAPI backend endpoint to run the audit pipeline asynchronously.
 
+> **Note:** The documents provided in the `knowra/regulatory_docs` folder are **demo FDA and EMA excerpts** used for demonstration and testing purposes. For production use, please ingest full, up-to-date official regulatory guidelines.
+
 ## 🏗️ Architecture & Workflow
 
 The application is composed of several key components:
@@ -26,7 +29,7 @@ The application is composed of several key components:
 4. **Knowledge Store (Knowra):** Manages vector embeddings of FDA/EMA documents (`knowra/ingestor.py`, `knowra/retriever.py`, `knowra/store.py`).
 5. **Guardrails:** Uses NVIDIA NeMo Guardrails (`medic_guard/guardrails/`) to prevent PII leakage and ensure safe LLM interactions.
 
-### 📊 LangGraph Execution Flow
+### 📊 Mermaid Chart of the Workflow
 
 ```mermaid
 graph TD
