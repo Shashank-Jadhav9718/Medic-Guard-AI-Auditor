@@ -29,27 +29,9 @@ The application is composed of several key components:
 4. **Knowledge Store (Knowra):** Manages vector embeddings of FDA/EMA documents (`knowra/ingestor.py`, `knowra/retriever.py`, `knowra/store.py`).
 5. **Guardrails:** Uses NVIDIA NeMo Guardrails (`medic_guard/guardrails/`) to prevent PII leakage and ensure safe LLM interactions.
 
-### 📊 Mermaid Chart of the Workflow
+### 📊 LangGraph Workflow Chart
 
-```mermaid
-graph TD
-    START((START)) --> Auditor[Auditor Node<br/><i>Queries Knowra & Retrieves Rules</i>]
-    Auditor --> Validator[Validator Node<br/><i>LLM Compliance Check</i>]
-    Validator --> Condition{Validation<br/>Passed?}
-    
-    Condition -- Yes --> Reporter[Reporter Node<br/><i>Formats Final Output</i>]
-    Condition -- No<br/>(Retry < Max) --> Auditor
-    Condition -- No<br/>(Retry >= Max) --> Reporter
-    
-    Reporter --> END((END))
-    
-    style START fill:#5DCAA5,stroke:#333,stroke-width:2px,color:#000
-    style END fill:#5DCAA5,stroke:#333,stroke-width:2px,color:#000
-    style Auditor fill:#1a1f2e,stroke:#5DCAA5,stroke-width:2px,color:#fff
-    style Validator fill:#1a1f2e,stroke:#5DCAA5,stroke-width:2px,color:#fff
-    style Reporter fill:#1a1f2e,stroke:#5DCAA5,stroke-width:2px,color:#fff
-    style Condition fill:#0e1117,stroke:#e0e0e0,stroke-width:2px,color:#fff
-```
+![LangGraph Execution Flow](assets/langgraph_workflow.png)
 
 ## 🚀 Local Setup
 
