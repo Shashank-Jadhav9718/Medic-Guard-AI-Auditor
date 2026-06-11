@@ -1,0 +1,738 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+.env.example
+.gitignore
+.streamlit/config.toml
+knowra/__init__.py
+knowra/ingestor.py
+knowra/regulatory_docs/ema_clinical_trial_guidelines.txt
+knowra/regulatory_docs/fda_labeling_21cfr201.txt
+knowra/regulatory_docs/fda_pii_policy.txt
+knowra/retriever.py
+knowra/store.py
+medic_guard/__init__.py
+medic_guard/api.py
+medic_guard/app.py
+medic_guard/config.py
+medic_guard/graph.py
+medic_guard/guardrails/__init__.py
+medic_guard/guardrails/config.yml
+medic_guard/guardrails/pii_block.co
+medic_guard/nodes/__init__.py
+medic_guard/nodes/auditor.py
+medic_guard/nodes/reporter.py
+medic_guard/nodes/validator.py
+medic_guard/state.py
+README.md
+requirements.txt
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path=".env.example">
+OPENAI_API_KEY=your-key-here
+MODEL_NAME=gpt-4o
+</file>
+
+<file path=".gitignore">
+chroma_data/
+.env
+__pycache__/
+*.pyc
+.venv/
+</file>
+
+<file path=".streamlit/config.toml">
+[theme]
+base = "dark"
+primaryColor = "#5DCAA5"
+backgroundColor = "#0e1117"
+secondaryBackgroundColor = "#1a1f2e"
+textColor = "#e0e0e0"
+
+[server]
+headless = true
+</file>
+
+<file path="knowra/__init__.py">
+# init
+</file>
+
+<file path="knowra/ingestor.py">
+from knowra.store import KnowraStore
+import os
+
+def chunk_text(text: str, size: int = 500, overlap: int = 50) -> list[str]:
+    chunks, start = [], 0
+    while start < len(text):
+        chunks.append(text[start:start + size])
+        start += size - overlap
+    return chunks
+
+def ingest_regulatory_docs(folder_path: str = "knowra/regulatory_docs") -> int:
+    store = KnowraStore()
+    total = 0
+    for fname in os.listdir(folder_path):
+        if not fname.endswith(".txt"):
+            continue
+        with open(os.path.join(folder_path, fname)) as f:
+            text = f.read()
+        chunks = chunk_text(text)
+        ids = [f"{fname}-chunk-{i}" for i in range(len(chunks))]
+        store.add_documents(chunks, ids)
+        total += len(chunks)
+        print(f"  Ingested {len(chunks)} chunks from {fname}")
+    print(f"✅ Total chunks ingested: {total}")
+    return total
+
+if __name__ == "__main__":
+    count = ingest_regulatory_docs()
+    assert count >= 0
+    print("✅ Ingestor ready. Chunks:", count)
+</file>
+
+<file path="knowra/regulatory_docs/ema_clinical_trial_guidelines.txt">
+According to the clinical trial regulations enforced by the European Medicines Agency (EMA), the mandatory registration of a clinical trial in a public registry must occur before the enrolment of the very first patient. The trial sponsor is legally obligated to submit all required protocol details, clinical objectives, and investigator information to the designated repository, such as the Clinical Trials Information System (CTIS), prior to initiating any screening or active intervention. This upfront registration ensures public transparency, prevents reporting bias, and fosters trust in clinical research across European Union member states.
+
+To safeguard patient rights and comply with regulatory archives policies, all informed consent documentation obtained from trial participants must be securely retained for a minimum of 25 years post-trial. The retention period begins immediately after the formal conclusion or premature termination of the clinical study. Sponsors and investigational sites are required to maintain these records in a highly secure, temperature-controlled, and restricted-access archive to enable long-term audits, handle potential legal inquiries, and verify that subject consent was properly obtained and documented during the active trial phases.
+
+Pharmacovigilance compliance mandates that any serious adverse events (SAEs) that are life-threatening or result in death must be formally reported to the competent authority within 7 days of the sponsor first becoming aware of the event. Follow-up reports containing detailed medical assessments and patient status must be submitted within an additional 8 days. Non-fatal or non-life-threatening serious adverse events are subject to a 15-day reporting window. These strict timelines ensure that regulatory bodies can continuously assess the safety profile of the investigational agent and intervene immediately if patient safety is compromised.
+
+Finally, every investigational medicinal product (IMP) distributed to clinical sites must be clearly and securely labelled with its unique batch number and explicit expiry date. This labeling is crucial for maintaining complete traceability throughout the drug supply chain, facilitating immediate product recalls if safety issues arise, and preventing the administration of expired therapeutic agents. The label must also include a statement identifying the product as an investigational drug, the name of the sponsor, and the protocol code, all visible on the primary packaging to prevent any mix-ups during clinical trials.
+</file>
+
+<file path="knowra/regulatory_docs/fda_labeling_21cfr201.txt">
+Pursuant to the regulations outlined in 21 CFR 201, the established or proprietary product name of a drug must be displayed with prominent visibility and emphasis on the principal display panel (PDP). The presentation must be designed in a clear, legible font and must be placed in a conspicuous position to ensure that consumers, pharmacists, and medical practitioners can easily identify the pharmaceutical product without confusion. The text size, contrast, and layout should prevent any obfuscation from brand logos or graphics.
+
+Furthermore, the net quantity of contents in the package must be explicitly declared on the label. This declaration is required to be expressed in both metric units (such as milliliters or grams) and United States customary units (such as fluid ounces or grains) to facilitate international alignment and ease of understanding for all end-users. The net quantity statement must be printed in a specific area of the principal display panel and adhere to regulatory specifications for minimum height and spacing to prevent misinterpretation of the package volume.
+
+The drug labeling must also include a comprehensive list of all active and inactive ingredients. These ingredients must be listed in a descending order of predominance by weight, ensuring that the substances comprising the largest portion of the formulation are listed first. Any inactive excipients, preservatives, or color additives must follow the active pharmaceutical ingredients in this structured sequence, providing patients and healthcare professionals with critical information regarding potential allergens or sensitivities.
+
+Lastly, the directions for use must be written in plain, clear, and concise language that is easily accessible to a layperson. The instructions should avoid overly dense clinical jargon and instead use simple terms to describe the correct dosage, frequency of administration, and potential contraindications. Providing legible and understandable instructions is essential for minimizing medication errors, promoting patient compliance, and ensuring that non-professional users can administer or consume the therapeutic agent safely and effectively.
+</file>
+
+<file path="knowra/regulatory_docs/fda_pii_policy.txt">
+Under standard federal privacy regulations, all patient names, direct identifiers, and personal details must be completely removed from all clinical documents, case report forms, and study reports prior to submission to the Food and Drug Administration (FDA). This strict privacy requirement is intended to prevent the unauthorized exposure of personal information during the regulatory review process. Researchers and sponsors must implement rigorous redaction and data-cleaning workflows to strip all direct identifiers, such as names, telephone numbers, and email addresses, substituting them with random alphanumeric subject codes.
+
+Specifically, sensitive records such as social security numbers (SSNs) and health insurance identification numbers are strictly classified as protected health information (PHI) under federal law. The inclusion of these numbers in any submission is considered a serious compliance violation and a significant breach of patient confidentiality. Because these identifiers carry a high risk of identity theft and unauthorized tracking, they must never be included in datasets or clinical narratives shared with the FDA or other public health agencies.
+
+To achieve regulatory compliance, all de-identification of health datasets must strictly follow either the HIPAA Safe Harbor method or the Expert Determination method. The Safe Harbor method requires the removal of 18 specific identifiers, including names, geographic subdivisions smaller than a state, and all elements of dates directly related to an individual. Alternatively, the Expert Determination method requires a qualified statistical expert to apply scientific principles to assess and manage the risk of re-identification, ensuring the risk is extremely small. Both methods are widely recognized as standard practices for maintaining the confidentiality and integrity of patient data.
+</file>
+
+<file path="knowra/retriever.py">
+from knowra.store import KnowraStore
+
+def retrieve_rules(query: str, top_k: int = 5) -> list[str]:
+    """Public API for Medic-Guard to call. Returns top_k rule chunks."""
+    store = KnowraStore()
+    return store.query(query, n_results=top_k)
+
+if __name__ == "__main__":
+    results = retrieve_rules("product labeling requirements", top_k=3)
+    assert len(results) > 0, "No results — did you run ingestor.py first?"
+    for i, r in enumerate(results, 1):
+        print(f"Result {i}: {r[:80]}...")
+    print("✅ Retriever working.")
+</file>
+
+<file path="knowra/store.py">
+import chromadb
+
+class KnowraStore:
+    def __init__(self):
+        self.client = chromadb.PersistentClient(path="./chroma_data")
+        self.collection = self.client.get_or_create_collection(name="regulatory_rules")
+
+    def add_documents(self, texts: list[str], ids: list[str]) -> None:
+        self.collection.add(documents=texts, ids=ids)
+
+    def query(self, text: str, n_results: int = 5) -> list[str]:
+        results = self.collection.query(query_texts=[text], n_results=n_results)
+        return results["documents"][0]
+
+if __name__ == "__main__":
+    store = KnowraStore()
+    store.add_documents(["PII must be redacted before submission"], ["test-001"])
+    results = store.query("PII redaction policy")
+    assert len(results) > 0
+    print("✅ ChromaDB working. Retrieved:", results[0][:60])
+</file>
+
+<file path="medic_guard/__init__.py">
+# init
+</file>
+
+<file path="medic_guard/api.py">
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+from medic_guard.graph import audit_graph
+from medic_guard.state import empty_state
+
+app = FastAPI(title="Medic-Guard API", version="1.0.0")
+
+class AuditRequest(BaseModel):
+    document_text: str
+
+class AuditResponse(BaseModel):
+    audit_status: str
+    confidence_score: float
+    rule_references: list
+    remediation: str
+    error: str
+
+@app.get("/health")
+def health():
+    return {"status": "ok", "service": "medic-guard"}
+
+@app.post("/audit", response_model=AuditResponse)
+async def audit(request: AuditRequest):
+    if not request.document_text.strip():
+        raise HTTPException(status_code=400, detail="document_text cannot be empty")
+    state = empty_state(request.document_text)
+    result = audit_graph.invoke(state)
+    return AuditResponse(
+        audit_status=result["audit_status"],
+        confidence_score=result["confidence_score"],
+        rule_references=result["rule_references"],
+        remediation=result["remediation"],
+        error=result["error"],
+    )
+</file>
+
+<file path="medic_guard/graph.py">
+from langgraph.graph import StateGraph, END
+from medic_guard.state import AuditState
+from medic_guard.nodes.auditor import auditor_node
+from medic_guard.nodes.validator import validator_node
+from medic_guard.nodes.reporter import reporter_node
+
+MAX_RETRIES = 1
+
+def route_after_validation(state: AuditState) -> str:
+    if not state["validation_passed"] and state["retry_count"] < MAX_RETRIES:
+        state["retry_count"] += 1
+        return "auditor"   # CRAG fallback: re-query Knowra
+    return "reporter"
+
+builder = StateGraph(AuditState)
+builder.add_node("auditor", auditor_node)
+builder.add_node("validator", validator_node)
+builder.add_node("reporter", reporter_node)
+
+builder.set_entry_point("auditor")
+builder.add_edge("auditor", "validator")
+builder.add_conditional_edges("validator", route_after_validation, {
+    "auditor": "auditor",
+    "reporter": "reporter",
+})
+builder.add_edge("reporter", END)
+
+audit_graph = builder.compile()
+
+if __name__ == "__main__":
+    import sys
+    if sys.platform.startswith("win"):
+        sys.stdout.reconfigure(encoding="utf-8")
+    from medic_guard.state import empty_state
+    state = empty_state("Paracetamol 500mg. Ingredients: Paracetamol, Microcrystalline Cellulose.")
+    result = audit_graph.invoke(state)
+    assert result["audit_status"] in ("PASSED", "FLAGGED")
+    print("✅ Graph assembled and executed.")
+    print(f"   Status: {result['audit_status']}")
+    print(f"   Confidence: {result['confidence_score']}")
+    print(f"   Retries used: {result['retry_count']}")
+</file>
+
+<file path="medic_guard/guardrails/pii_block.co">
+define flow block pii in output
+  if $bot_message matches r"[\w\.-]+@[\w\.-]+\.\w+" or $bot_message matches r"\b\d{3}-\d{2}-\d{4}\b"
+    bot say "Output blocked: PII detected. Please review document before submission."
+    stop
+
+define flow soften hallucination language
+  bot say $bot_message
+</file>
+
+<file path="medic_guard/nodes/__init__.py">
+# init
+</file>
+
+<file path="requirements.txt">
+langchain
+langgraph
+chromadb
+openai
+fastapi
+uvicorn
+streamlit
+nemoguardrails
+python-dotenv
+httpx
+pymupdf
+</file>
+
+<file path="medic_guard/app.py">
+import streamlit as st
+import httpx
+import fitz
+
+
+st.set_page_config(
+    page_title="Medic-Guard Auditor",
+    layout="centered",
+    initial_sidebar_state="collapsed",
+)
+
+st.title("🛡️ Medic-Guard AI Auditor")
+st.caption("Upload a medical product PDF to run an autonomous compliance audit.")
+
+API_URL = "http://localhost:8000/audit"
+
+uploaded = st.file_uploader("Upload product documentation (PDF)", type=["pdf"])
+
+if uploaded:
+    with st.spinner("Extracting text from PDF..."):
+        doc = fitz.open(stream=uploaded.read(), filetype="pdf")
+        text = "\n".join(page.get_text() for page in doc)
+    st.info(f"Extracted {len(text)} characters from {len(doc)} pages.")
+
+    if st.button("▶ Run Compliance Audit"):
+        with st.spinner("Running audit pipeline..."):
+            try:
+                resp = httpx.post(API_URL, json={"document_text": text}, timeout=60)
+                result = resp.json()
+            except Exception as e:
+                st.error(f"API error: {e}")
+                st.stop()
+
+        status = result.get("audit_status", "UNKNOWN")
+        score = result.get("confidence_score", 0.0)
+
+        if status == "PASSED":
+            st.success("✅  PASSED — Document meets compliance requirements.")
+        else:
+            st.error("🚨  FLAGGED — Compliance issues detected.")
+
+        st.metric("Confidence Score", f"{score:.0%}")
+        st.progress(score)
+
+        with st.expander("📋 Rule References"):
+            refs = result.get("rule_references", [])
+            if refs:
+                for r in refs:
+                    st.markdown(f"- {r}")
+            else:
+                st.write("No specific rules cited.")
+
+        if status == "FLAGGED" and result.get("remediation"):
+            st.warning("**Recommended Remediation:**\n\n" + result["remediation"])
+
+        if result.get("error"):
+            st.error("Pipeline error: " + result["error"])
+</file>
+
+<file path="medic_guard/config.py">
+from dotenv import load_dotenv
+import os
+
+def load_config() -> dict:
+    load_dotenv()
+    return {
+        "OPENAI_API_KEY": os.getenv("OPENAI_API_KEY", ""),
+        "GEMINI_API_KEY": os.getenv("GEMINI_API_KEY", ""),
+        "GOOGLE_API_KEY": os.getenv("GOOGLE_API_KEY", ""),
+        "MODEL_NAME": os.getenv("MODEL_NAME", "gemini-2.5-flash"),
+    }
+
+if __name__ == "__main__":
+    cfg = load_config()
+    assert "MODEL_NAME" in cfg
+    print("[OK] Config loaded:", cfg["MODEL_NAME"])
+</file>
+
+<file path="medic_guard/guardrails/config.yml">
+models:
+  - type: main
+    engine: google_genai
+    model: gemini-1.5-flash
+
+rails:
+  output:
+    flows:
+      - block pii in output
+      - soften hallucination language
+</file>
+
+<file path="medic_guard/nodes/auditor.py">
+from medic_guard.state import AuditState
+from knowra.retriever import retrieve_rules
+
+def auditor_node(state: AuditState) -> AuditState:
+    """Queries Knowra with the document text and stores retrieved rules."""
+    try:
+        query = state["document_text"][:500]  # Use first 500 chars as query
+        rules = retrieve_rules(query, top_k=5)
+        state["retrieved_rules"] = rules
+    except Exception as e:
+        state["error"] = f"Auditor error: {str(e)}"
+    return state
+
+if __name__ == "__main__":
+    from medic_guard.state import empty_state
+    test_state = empty_state("Product label: Paracetamol 500mg tablets. Contains paracetamol.")
+    result = auditor_node(test_state)
+    assert len(result["retrieved_rules"]) > 0, "No rules retrieved — check Knowra ingestion"
+    print(f"[OK] Auditor Node: retrieved {len(result['retrieved_rules'])} rules.")
+    print("  First rule preview:", result["retrieved_rules"][0][:80])
+</file>
+
+<file path="medic_guard/nodes/reporter.py">
+from medic_guard.state import AuditState
+from langchain_openai import ChatOpenAI
+from langchain_google_genai import ChatGoogleGenerativeAI
+from medic_guard.config import load_config
+import json
+import re
+
+
+def reporter_node(state: AuditState) -> AuditState:
+    if state.get("error"):
+        state["audit_status"] = "FLAGGED"
+        return state
+    cfg = load_config()
+    model_name = cfg["MODEL_NAME"]
+    if "gemini" in model_name.lower():
+        llm = ChatGoogleGenerativeAI(
+            model=model_name,
+            google_api_key=cfg["GOOGLE_API_KEY"] or cfg["GEMINI_API_KEY"],
+            temperature=0.0,
+        )
+    else:
+        llm = ChatOpenAI(
+            model=model_name, api_key=cfg["OPENAI_API_KEY"], temperature=0.0
+        )
+    rules_text = "\n".join(f"- {r[:200]}" for r in state["retrieved_rules"])
+    prompt = (
+        "You are a medical compliance auditor. Given a product document and regulatory rules, "
+        "respond ONLY with a JSON object (no markdown, no explanation) with keys:\n"
+        '  "audit_status": "PASSED" or "FLAGGED"\n'
+        '  "rule_references": [list of short rule citations used]\n'
+        '  "remediation": "empty string if PASSED, corrective action string if FLAGGED"\n\n'
+        f"Document:\n{state['document_text'][:600]}\n\nRules:\n{rules_text}"
+    )
+    response = llm.invoke(prompt)
+    try:
+        clean = re.sub(r"```json|```", "", response.content).strip()
+        data = json.loads(clean)
+        state["audit_status"] = data.get("audit_status", "FLAGGED")
+        state["rule_references"] = data.get("rule_references", [])
+        state["remediation"] = data.get("remediation", "")
+    except Exception as e:
+        state["error"] = f"Reporter parse error: {e}"
+        state["audit_status"] = "FLAGGED"
+    return state
+
+
+if __name__ == "__main__":
+    import sys
+
+    if sys.platform.startswith("win"):
+        sys.stdout.reconfigure(encoding="utf-8")
+    from medic_guard.state import AuditState
+
+    mock_state: AuditState = {
+        "document_text": "Product: Ibuprofen 200mg. All labeling requirements met.",
+        "retrieved_rules": ["Ingredient list must appear in descending order."],
+        "retry_count": 0,
+        "validation_passed": True,
+        "confidence_score": 0.8,
+        "audit_status": "PENDING",
+        "rule_references": [],
+        "remediation": "",
+        "error": "",
+    }
+    result = reporter_node(mock_state)
+    assert result["audit_status"] in ("PASSED", "FLAGGED")
+    print(f"✅ Reporter Node: status={result['audit_status']}")
+    print(f"   References: {result['rule_references']}")
+    print(f"   Remediation: {result['remediation'][:80] or '(none)'}")
+</file>
+
+<file path="medic_guard/state.py">
+from typing import TypedDict
+
+class AuditState(TypedDict):
+    document_text: str       # Raw text extracted from uploaded PDF
+    retrieved_rules: list    # Rule chunks from Knowra
+    retry_count: int         # CRAG fallback counter (max 1)
+    validation_passed: bool  # Set by Validator Node
+    confidence_score: float  # 0.0 – 1.0 from CRAG scoring
+    audit_status: str        # "PASSED" | "FLAGGED" | "PENDING"
+    rule_references: list    # Rule citations used in decision
+    remediation: str         # Suggested correction if FLAGGED
+    error: str               # Error message if any node fails
+
+def empty_state(document_text: str) -> AuditState:
+    return AuditState(
+        document_text=document_text,
+        retrieved_rules=[],
+        retry_count=0,
+        validation_passed=False,
+        confidence_score=0.0,
+        audit_status="PENDING",
+        rule_references=[],
+        remediation="",
+        error="",
+    )
+
+if __name__ == "__main__":
+    s = empty_state("Test product label text.")
+    assert s["audit_status"] == "PENDING"
+    assert s["retry_count"] == 0
+    print("[OK] AuditState schema valid:", list(s.keys()))
+</file>
+
+<file path="medic_guard/nodes/validator.py">
+import re
+from medic_guard.state import AuditState
+from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_openai import ChatOpenAI
+from medic_guard.config import load_config
+
+def validator_node(state: AuditState) -> AuditState:
+    """
+    CRAG: Scores relevance of each retrieved rule against the document.
+    If mean score < 0.5, sets validation_passed=False for retry.
+    """
+    if state.get("error"):
+        return state
+    cfg = load_config()
+    
+    model_name = cfg["MODEL_NAME"]
+    if "gemini" in model_name.lower():
+        llm = ChatGoogleGenerativeAI(
+            model=model_name,
+            google_api_key=cfg["GOOGLE_API_KEY"] or cfg["GEMINI_API_KEY"],
+            temperature=0.0
+        )
+    else:
+        llm = ChatOpenAI(
+            model=model_name,
+            api_key=cfg["OPENAI_API_KEY"],
+            temperature=0.0
+        )
+        
+    doc_text = str(state.get("document_text", ""))[:300]
+    retrieved_rules = state.get("retrieved_rules", [])
+    
+    scores = []
+    for rule in retrieved_rules:
+        rule_str = str(rule)[:300]
+        prompt = (
+            f"Rate how relevant this rule is to the document on a scale of 0 to 1. "
+            f"Reply with ONLY a number between 0 and 1, nothing else.\n\n"
+            f"Document: {doc_text}\n\nRule: {rule_str}"
+        )
+        try:
+            response = llm.invoke(prompt)
+            content = response.content.strip()
+            # Extract first number (float or integer) using regex
+            match = re.search(r"[+-]?\d*\.?\d+", content)
+            if match:
+                score = float(match.group())
+            else:
+                score = 0.0
+            scores.append(max(0.0, min(1.0, score)))
+        except Exception:
+            scores.append(0.0)
+            
+    mean_score = sum(scores) / len(scores) if scores else 0.0
+    state["confidence_score"] = round(mean_score, 3)
+    state["validation_passed"] = mean_score >= 0.5
+    return state
+
+if __name__ == "__main__":
+    from medic_guard.state import AuditState
+    mock_state: AuditState = {
+        "document_text": "Product: Ibuprofen 200mg. Ingredients listed in descending order.",
+        "retrieved_rules": ["Ingredient list must appear in descending order of predominance."],
+        "retry_count": 0, "validation_passed": False, "confidence_score": 0.0,
+        "audit_status": "PENDING", "rule_references": [], "remediation": "", "error": ""
+    }
+    result = validator_node(mock_state)
+    assert 0.0 <= result["confidence_score"] <= 1.0
+    print(f"[OK] Validator Node: score={result['confidence_score']}, passed={result['validation_passed']}")
+</file>
+
+<file path="medic_guard/guardrails/__init__.py">
+import os
+from dotenv import load_dotenv
+
+# 1. Load environment variables from the workspace root .env file
+root_env_path = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.dirname(__file__))), ".env"
+)
+load_dotenv(root_env_path)
+
+# 2. Enforce LangChain routing in NeMo Guardrails programmatically
+os.environ["NEMOGUARDRAILS_LLM_FRAMEWORK"] = "langchain"
+
+# Import NeMo Guardrails after environment setup
+from nemoguardrails import LLMRails, RailsConfig  # noqa: E402
+
+
+def get_rails() -> LLMRails:
+    """Loads and initializes NeMo Guardrails with the local configuration.
+
+    Returns:
+        LLMRails: The initialized LLMRails guardrails instance.
+    """
+    config = RailsConfig.from_path(os.path.dirname(__file__))
+    return LLMRails(config)
+
+
+if __name__ == "__main__":
+    rails = get_rails()
+    print("[Success] NeMo Guardrails loaded:", type(rails).__name__)
+</file>
+
+<file path="README.md">
+# 🛡️ Medic-Guard AI Auditor
+
+<!-- Replace the link below with your original UI screenshot -->
+![Medic-Guard UI](assets/original_ui_screenshot.png)
+
+Medic-Guard AI Auditor is an automated, AI-driven compliance auditing system for medical product documentation. It analyzes medical documents (like PDFs of product labels, clinical trial summaries, etc.) against FDA and EMA regulatory guidelines, flagging potential compliance issues and providing actionable remediation steps.
+
+## ✨ Features
+
+- **Automated Compliance Auditing:** Validates product documentation against ingested regulatory rules using advanced LLMs (OpenAI/Gemini).
+- **Multi-Agent Workflow (LangGraph):** Uses a structured `StateGraph` containing Auditor, Validator, and Reporter nodes to robustly process and evaluate documents.
+- **RAG-Powered Rules Engine (Knowra):** Ingests and retrieves relevant sections from FDA (e.g., 21 CFR 201 labeling, PII policy) and EMA guidelines using a ChromaDB vector store.
+- **Confidence Scoring & Remediation:** Provides a confidence score for its evaluation and specific remediation suggestions if a document is flagged.
+- **NeMo Guardrails Integration:** Ensures that LLM responses adhere to strict safety, PII, and formatting guidelines.
+- **Modern User Interface:** Provides an easy-to-use Streamlit frontend for uploading PDFs and viewing audit results.
+- **RESTful API Backend:** A scalable FastAPI backend endpoint to run the audit pipeline asynchronously.
+
+> **Note:** The documents provided in the `knowra/regulatory_docs` folder are **demo FDA and EMA excerpts** used for demonstration and testing purposes. For production use, please ingest full, up-to-date official regulatory guidelines.
+
+## 🏗️ Architecture & Workflow
+
+The application is composed of several key components:
+1. **Frontend (Streamlit):** `medic_guard/app.py` allows users to upload PDF documents, extracts text using PyMuPDF (`fitz`), and queries the API.
+2. **Backend API (FastAPI):** `medic_guard/api.py` exposes a POST endpoint `/audit` that triggers the LangGraph workflow.
+3. **Audit Pipeline (LangGraph):** 
+   - **Auditor Node:** Queries the `Knowra` knowledge base to retrieve specific regulatory rules matching the document.
+   - **Validator Node:** Uses LLMs to evaluate the text against the rules. Includes self-reflection (CRAG fallback) to re-query if validation fails.
+   - **Reporter Node:** Formats the final audit status (PASSED or FLAGGED), confidence score, rule references, and remediation steps.
+4. **Knowledge Store (Knowra):** Manages vector embeddings of FDA/EMA documents (`knowra/ingestor.py`, `knowra/retriever.py`, `knowra/store.py`).
+5. **Guardrails:** Uses NVIDIA NeMo Guardrails (`medic_guard/guardrails/`) to prevent PII leakage and ensure safe LLM interactions.
+
+### 📊 LangGraph Workflow
+
+```mermaid
+graph TD
+    START((START)) --> Auditor[Auditor Node<br/><i>Queries Knowra & Retrieves Rules</i>]
+    Auditor --> Validator[Validator Node<br/><i>LLM Compliance Check</i>]
+    Validator --> Condition{Validation<br/>Passed?}
+    
+    Condition -- Yes --> Reporter[Reporter Node<br/><i>Formats Final Output</i>]
+    Condition -- No<br/>(Retry < Max) --> Auditor
+    Condition -- No<br/>(Retry >= Max) --> Reporter
+    
+    Reporter --> END((END))
+    
+    style START fill:#5DCAA5,stroke:#333,stroke-width:2px,color:#000
+    style END fill:#5DCAA5,stroke:#333,stroke-width:2px,color:#000
+    style Auditor fill:#1a1f2e,stroke:#5DCAA5,stroke-width:2px,color:#fff
+    style Validator fill:#1a1f2e,stroke:#5DCAA5,stroke-width:2px,color:#fff
+    style Reporter fill:#1a1f2e,stroke:#5DCAA5,stroke-width:2px,color:#fff
+    style Condition fill:#0e1117,stroke:#e0e0e0,stroke-width:2px,color:#fff
+```
+
+## 🚀 Local Setup
+
+### Prerequisites
+- Python 3.9+
+- Git
+- OpenAI API Key or Google Gemini API Key
+
+### Quick Start
+```bash
+# 1. Clone the repository
+git clone https://github.com/Shashank-Jadhav9718/Medic-Guard-AI-Auditor.git
+cd Medic-Guard-AI-Auditor
+
+# 2. Create and activate a virtual environment
+python -m venv .venv 
+source .venv/bin/activate  # On Windows use: .venv\Scripts\activate
+
+# 3. Install dependencies
+pip install -r requirements.txt
+
+# 4. Configure environment variables
+cp .env.example .env   
+# Edit .env and add your OPENAI_API_KEY / GEMINI_API_KEY
+
+# 5. Ingest the regulatory documents into the Knowra vector store
+python knowra/ingestor.py
+
+# 6. Start the FastAPI backend server
+uvicorn medic_guard.api:app --reload --port 8000 &
+
+# 7. Start the Streamlit frontend UI
+streamlit run medic_guard/app.py
+```
+
+## 📖 Standard Operating Procedure (SOP)
+
+The Medic-Guard AI Auditor operates under the following SOP:
+1. **Document Ingestion:** PDF documents are uploaded via the secure UI. Text is extracted, preserving essential content while ignoring formatting artifacts.
+2. **Regulatory Retrieval:** The system identifies key medical entities and fetches relevant FDA/EMA clauses from the local vector database.
+3. **Automated Audit:** The LLM-powered validation engine cross-references the document text with retrieved guidelines.
+4. **Review & Remediation:** The system classifies the document as `PASSED` or `FLAGGED`. If flagged, explicit remediation instructions and the violated rule citations are provided to the user.
+5. **Data Privacy:** PII and sensitive medical information are protected using NeMo guardrails before any LLM processing.
+</file>
+
+</files>
