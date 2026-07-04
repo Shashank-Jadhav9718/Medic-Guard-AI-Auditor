@@ -1,8 +1,13 @@
 # 🛡️ Medic-Guard AI Auditor
 
-<!-- Replace the link below with your original UI screenshot -->
-![Medic-Guard UI](assets/original_ui_screenshot.png)
+## Screenshots
+(<Screenshot 2026-07-04 181409.png>)
+(<Screenshot 2026-07-04 181429.png>)
+### Audit Status
+![Audit Status](assets/audit_status.png)
 
+### Rule References and Remediation
+![Audit Remediation](assets/audit_remediation.png)
 Medic-Guard AI Auditor is an automated, AI-driven compliance auditing system for medical product documentation. It analyzes medical documents (like PDFs of product labels, clinical trial summaries, etc.) against FDA and EMA regulatory guidelines, flagging potential compliance issues and providing actionable remediation steps.
 
 ## ✨ Features
