@@ -9,3 +9,6 @@ nemoguardrails
 python-dotenv
 httpx
 pymupdf
+langchain-openai
+langchain-google-genai
+pydantic
